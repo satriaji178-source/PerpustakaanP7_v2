@@ -1,15 +1,17 @@
 <?php
 $page_title = "Data Anggota";
+// Memastikan path file sesuai dengan struktur folder kamu
 require_once '../../config/database_tugas.php';
 require_once '../../includes/header.php';
 
-// Logic Search & Pagination tetap sama agar fungsionalitas tidak berubah
+// Logic Search & Pagination
 $keyword = isset($_GET['search']) ? sanitize($_GET['search']) : '';
 $limit = 10; 
 $page = isset($_GET['halaman']) ? (int)$_GET['halaman'] : 1;
 $start = ($page > 1) ? ($page * $limit) - $limit : 0;
 $search_query = "%$keyword%";
 
+// Count total data untuk pagination
 $sql_count = "SELECT COUNT(*) AS total FROM anggota WHERE nama LIKE ? OR email LIKE ? OR telepon LIKE ?";
 $stmt_count = $conn->prepare($sql_count);
 $stmt_count->bind_param("sss", $search_query, $search_query, $search_query);
@@ -17,6 +19,7 @@ $stmt_count->execute();
 $total_data = $stmt_count->get_result()->fetch_assoc()['total'];
 $total_pages = ceil($total_data / $limit);
 
+// Ambil data anggota
 $sql_data = "SELECT * FROM anggota WHERE nama LIKE ? OR email LIKE ? OR telepon LIKE ? ORDER BY created_at DESC LIMIT ?, ?";
 $stmt_data = $conn->prepare($sql_data);
 $stmt_data->bind_param("sssii", $search_query, $search_query, $search_query, $start, $limit);
@@ -60,13 +63,29 @@ $result = $stmt_data->get_result();
 </style>
 
 <div class="container py-4">
+    <?php if (isset($_GET['msg'])): ?>
+        <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4" role="alert" style="border-radius: 10px;">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-check-circle me-2 fs-5"></i>
+                <div>
+                    <?php 
+                        if($_GET['msg'] == 'success') echo "<strong>Berhasil!</strong> Anggota baru telah ditambahkan.";
+                        elseif($_GET['msg'] == 'updated') echo "<strong>Berhasil!</strong> Data anggota telah diperbarui.";
+                        elseif($_GET['msg'] == 'deleted') echo "<strong>Terhapus!</strong> Data anggota telah berhasil dihapus.";
+                    ?>
+                </div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <?php endif; ?>
+
     <div class="row mb-4 align-items-center">
         <div class="col">
             <h3 class="fw-bold text-dark m-0">Anggota Perpustakaan</h3>
             <p class="text-muted">Total data terdaftar: <span class="badge bg-primary rounded-pill"><?= $total_data ?></span></p>
         </div>
         <div class="col-auto">
-            <a href="tambah.php" class="btn btn-primary shadow-sm px-4 py-2" style="border-radius: 10px;">
+            <a href="create.php" class="btn btn-primary shadow-sm px-4 py-2" style="border-radius: 10px;">
                 <i class="fas fa-plus me-2"></i>Tambah Anggota
             </a>
         </div>
@@ -120,8 +139,8 @@ $result = $stmt_data->get_result();
                                 </div>
                             </td>
                             <td>
-                                <div class="small"><i class="far fa-envelope me-1"></i> <?= htmlspecialchars($row['email']) ?></div>
-                                <div class="text-muted small"><i class="fas fa-phone me-1"></i> <?= $row['telepon'] ?></div>
+                                <div class="small"><i class="far fa-envelope me-1 text-primary"></i> <?= htmlspecialchars($row['email']) ?></div>
+                                <div class="text-muted small"><i class="fas fa-phone me-1 text-success"></i> <?= $row['telepon'] ?></div>
                             </td>
                             <td>
                                 <?php if($row['jenis_kelamin'] == 'Laki-laki'): ?>
@@ -143,8 +162,18 @@ $result = $stmt_data->get_result();
                                         <i class="fas fa-ellipsis-v"></i>
                                     </button>
                                     <ul class="dropdown-menu shadow border-0">
-                                        <li><a class="dropdown-item" href="edit.php?id=<?= $row['id_anggota'] ?>"><i class="far fa-edit me-2"></i>Edit</a></li>
-                                        <li><a class="dropdown-item text-danger" href="hapus.php?id=<?= $row['id_anggota'] ?>" onclick="return confirm('Yakin hapus?')"><i class="far fa-trash-alt me-2"></i>Hapus</a></li>
+                                        <li>
+                                            <a class="dropdown-item" href="update.php?id=<?= $row['id_anggota'] ?>">
+                                                <i class="far fa-edit me-2 text-warning"></i>Edit Data
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <a class="dropdown-item text-danger" href="delete.php?id=<?= $row['id_anggota'] ?>" 
+                                               onclick="return confirm('Apakah Anda yakin ingin menghapus anggota: <?= addslashes($row['nama']) ?>?')">
+                                                <i class="far fa-trash-alt me-2"></i>Hapus Anggota
+                                            </a>
+                                        </li>
                                     </ul>
                                 </div>
                             </td>
@@ -155,7 +184,7 @@ $result = $stmt_data->get_result();
                         ?>
                         <tr>
                             <td colspan="6" class="text-center py-5">
-                                <img src="../../assets/img/empty.svg" width="100" class="mb-3 d-block mx-auto" alt="">
+                                <i class="fas fa-search fa-4x text-light mb-3"></i>
                                 <p class="text-muted">Data yang kamu cari tidak ditemukan.</p>
                             </td>
                         </tr>
