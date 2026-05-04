@@ -6,6 +6,9 @@
     <title><?php echo isset($page_title) ? $page_title : 'Perpustakaan'; ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <title>Data Anggota Perpustakaan</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
     <style>
         body {
             min-height: 100vh;
@@ -34,8 +37,8 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/perpustakaan/modules/buku/index.php">
-                            <i class="bi bi-book"></i> Data Buku
+                        <a class="nav-link" href="/perpustakaan/modules/anggota/index.php">
+                            <i class="bi bi-person"></i> Data Anggota
                         </a>
                     </li>
                 </ul>

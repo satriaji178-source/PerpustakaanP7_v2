@@ -27,11 +27,11 @@ require_once 'config/database.php';
                     echo '</div>';
                     
                     // Test query
-                    $result = $conn->query("SELECT COUNT(*) as total FROM buku");
+                    $result = $conn->query("SELECT COUNT(*) as total FROM anggota");
                     if ($result) {
                         $row = $result->fetch_assoc();
                         echo '<div class="alert alert-info">';
-                        echo '<p><strong>Total Buku di Database:</strong> ' . $row['total'] . '</p>';
+                        echo '<p><strong>Total Anggota di Database:</strong> ' . $row['total'] . '</p>';
                         echo '</div>';
                     }
                 } else {
